@@ -12,15 +12,29 @@ Kim registra a solicitação e repassa a tarefa a Nick, que confere o preço pub
 
 ## Do pedido ao caixa
 
-Um pedido de 30 cestas passa por atendimento, proposta comercial, coordenação, agenda e conferência fiscal. Max consulta uma API de preços fictícia e de somente leitura. Propostas com desconto passam por aprovação humana. A agenda permite uma gravação por vez, e Juca confere o registro no dia seguinte. Divergências são registradas na mesma issue.
+A demonstração acompanha um pedido fictício de 30 cestas. Tom qualifica o pedido, Max prepara a proposta com preços de uma API fictícia de somente leitura e Kim confere as regras. Se houver desconto, a proposta aguarda aprovação humana.
 
-[Ver o diagrama do pedido ao caixa](diagramas/do-pedido-ao-caixa.webp)
+O registro na **agenda interna** começa quando Tom informa que o cliente pagou. Nick é a responsável por lançar o pedido e imprimir a folha automaticamente. A equipe operacional consulta a agenda e recebe as informações do pedido pela Kim, no canal de acompanhamento diário. Na etapa fiscal da demo, Juca prepara a nota fictícia e confere o registro no dia seguinte. Se encontrar divergência, registra a correção na mesma issue.
+
+```mermaid
+flowchart TD
+    A["Tom qualifica o pedido"] --> B["Max prepara a proposta"]
+    B --> C{"Kim identifica desconto?"}
+    C -- "Sim" --> D{"Aprovação humana"}
+    D -- "Recusado" --> E["Motivo registrado"]
+    D -- "Aprovado" --> F["Tom informa o pagamento"]
+    C -- "Sem desconto" --> F
+    F --> G["Nick registra na agenda interna"]
+    G --> H["Nick imprime a folha automaticamente"]
+    H --> I["Kim comunica o pedido ao operacional"]
+    G --> J["Juca prepara a nota fictícia e confere no dia seguinte"]
+```
 
 ## Decisões de design
 
 | Decisão | Como aparece nos fluxos |
 | --- | --- |
 | Aprovação humana | A decisão fica registrada para descontos na proposta e mudanças de preço no portal. |
-| Responsabilidade por recurso | Nick controla a gravação na agenda com uma trava que impede escritas simultâneas. |
+| Responsabilidade por recurso | Nick é a responsável por registrar pedidos na agenda interna. O operacional consulta a agenda, e a demo prevê uma trava contra gravações simultâneas. |
 | Passagem rastreável | Cada bilhete registra responsável, prioridade, prazo e fonte no log de passagens. |
 | Fonte de referência | A proposta consulta a API de preços. A correção de cardápio começa pela leitura do valor publicado. |
